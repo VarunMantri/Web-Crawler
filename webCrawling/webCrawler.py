@@ -2,41 +2,40 @@
 __author__="Varun Rajiv Mantri"
 
 '''
-* webCrawler: starts from the seed-link and crawls the internet adding scraped content to a local text file
+* webCrawler: starts from the seed-link and crawls the internet adding scraped content to a local text file [uses politeness]
 '''
 
 import urllib.request as u
+import time
 from bs4 import BeautifulSoup
 
 
 def main():
     seedLink="https://en.wikipedia.org/wiki/Web_crawler"
     activeLinks = []
-    target=open('localStorage.txt','w')
     activeLinks.append(seedLink)
-    webCrawler(1,activeLinks,target)
-    target.write("some data not written")
-    target.close()
+    webCrawler(1,activeLinks)
     print('crawling completed')
 
 
-def webCrawler(counter,activeLinks,target):
+def webCrawler(counter,activeLinks):
     '''
     this methods crawls the internet recursively adding data on each website to a local text file
     :param counter: keeps the count of websites visited
     :param activeLinks: a list used as a queue for breadth-first crawling
-    :param target: address/location of local text file
     :return: None
     '''
     print(counter)
-    if counter==100 or len(activeLinks)==0:
+    if counter==15 or len(activeLinks)==0:
         return
     link=activeLinks.pop(0)
     try:
         page = u.urlopen(link)
         counter = counter + 1
+        fileName='file'+str(counter)+'.txt'
+        target = open(fileName, 'w+')
         soup = BeautifulSoup(page)
-        target.write("->link: "+link)
+        target.write("->link: " + link)
         target.write("\n")
         target.write("{")
         for text in soup.select('p'):
@@ -47,14 +46,15 @@ def webCrawler(counter,activeLinks,target):
             temp = a['href']
             if temp.find('http') is not -1:
                 activeLinks.append(temp)
-
-        webCrawler(counter, activeLinks,target)
+        target.close()
+        time.sleep(1)  #using politeness
+        webCrawler(counter, activeLinks)
     except Exception:
         print('http error hit')
-        return webCrawler(counter,activeLinks,target)
+        return webCrawler(counter,activeLinks)
     except u.URLError:
         print('url error hit')
-        return webCrawler(counter,activeLinks,target)
+        return webCrawler(counter,activeLinks)
 
 
 
