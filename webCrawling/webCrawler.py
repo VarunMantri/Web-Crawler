@@ -26,7 +26,7 @@ def webCrawler(counter,activeLinks):
     :return: None
     '''
     print(counter)
-    if counter==15 or len(activeLinks)==0:
+    if counter==1000 or len(activeLinks)==0:
         return
     link=activeLinks.pop(0)
     try:
